@@ -74,22 +74,22 @@ class Individual_Grid(object):
         right = width - 1
         for y in range(height):
             for x in range(left, right):
-                if((random.Random()*99+1)<35 and y>1):
+                if((random.random()*99+1)<35 and y>1):
                     if newGen[y][x]== 'X':
                         if newGen[y-1][x]!='X':
-                            if (random.Random()*9+1)<=5:
+                            if (random.random()*9+1)<=5:
                                 genome[y][x] = 'B'
                             else:
                                 genome[y][x] = '-'
                         elif newGen[y][x]!='|' or newGen[y][x]!='T':
-                            if (random.Random()*9+1)<=2:
+                            if (random.random()*9+1)<=2:
                                 genome[y][x] = 'M'
                             else:
                                 genome[y][x] = '?'
                         elif newGen[y][x]!='-':
-                            if (random.Random()*9+1)<=3:
+                            if (random.random()*9+1)<=3:
                                 genome[y][x] = '?'
-                            if (random.Random()*9+1)>=6:
+                            if (random.random()*9+1)>=6:
                                 genome[y][x] = 'o'
                         else:
                             genome[y][x] = newGen[y][x]
@@ -107,7 +107,7 @@ class Individual_Grid(object):
         right = width - 1
         for y in range(height):
             for x in range(left, right):
-                if (random.Random()*100+1)<=15:
+                if (random.random()*100+1)<=15:
                         copy_genome = new_genome
                         if o[y][x] != 'T' and o[y][x] != '|':
                             copy_genome[y][x] = o[y][x]
@@ -117,7 +117,7 @@ class Individual_Grid(object):
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
                 
         # do mutation; note we're returning a one-element tuple here
-        return (Individual_Grid(new_genome),)
+        return (Individual_Grid(self.mutate(new_genome)),)
 
     # Turn the genome into a level string (easy for this genome)
     def to_level(self):
@@ -381,9 +381,13 @@ def generate_successors(population):
     selection_1 = None
     selection_2 = None
     for individual in population:
-        if selection_1 is None or selection_1.fitness() < individual.fitness():
+        if selection_1 is None:
             selection_1 = individual
-        elif selection_2 is None or selection_2.fitness() < individual.fitness():
+        elif selection_2 is None:
+            selection_2 = individual
+        elif selection_1.fitness() < individual.fitness():
+            selection_1 = individual
+        elif selection_2.fitness() < individual.fitness():
             selection_2 = individual
     children = selection_1.generate_children(selection_2)
     for child in children:
@@ -469,7 +473,7 @@ def ga():
                             f.write("".join(row) + "\n")
                 generation += 1
                 # STUDENT Determine stopping condition
-                stop_condition = False
+                stop_condition = generation > 50
                 if stop_condition:
                     break
                 # STUDENT Also consider using FI-2POP as in the Sorenson & Pasquier paper
@@ -495,7 +499,7 @@ if __name__ == "__main__":
     print("Best fitness: " + str(best.fitness()))
     now = time.strftime("%m_%d_%H_%M_%S")
     # STUDENT You can change this if you want to blast out the whole generation, or ten random samples, or...
-    for k in range(0, 10):
+    for k in range(0, len(final_gen)):
         with open("levels/" + now + "_" + str(k) + ".txt", 'w') as f:
             for row in final_gen[k].to_level():
                 f.write("".join(row) + "\n")
