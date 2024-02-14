@@ -347,6 +347,57 @@ def generate_successors(population):
     results = []
     # STUDENT Design and implement this
     # Hint: Call generate_children() on some individuals and fill up results.
+
+    # Elitist Selection
+    selection_1 = None
+    selection_2 = None
+    for individual in population:
+        if selection_1 is None or selection_1.fitness() < individual.fitness():
+            selection_1 = individual
+        elif selection_2 is None or selection_2.fitness() < individual.fitness():
+            selection_2 = individual
+    children = selection_1.generate_children(selection_2)
+    for child in children:
+        results.append(child)
+    # End of Elitist Selection
+
+    # Roulette Selection
+    
+    # Get combined fitness of all individuals in population
+    total_fitness = 0
+    for individual in population:
+        total_fitness += individual.fitness()
+    
+    # Create an array of all the fitnesses cumulatively added (the fitness + the combined fitnesses to the left of it in the array)
+    cumulative_fitnesses = []
+    ascending_fitness = 0
+    for individual in population:
+        cumulative_fitnesses.append(individual.fitness() + ascending_fitness)
+        ascending_fitness += individual.fitness()
+    
+    # Randomly select an individual using fitness as a probability weight
+    index = 0
+    draw = random.uniform(1, total_fitness)
+    for fitness in cumulative_fitnesses:
+        if draw <= fitness:
+            index = cumulative_fitnesses.index(fitness)
+            break
+    selection_1 = population[index]
+    
+    # Randomly select an individual using fitness as a probability weight
+    index = 0
+    draw = random.uniform(1, total_fitness)
+    for fitness in cumulative_fitnesses:
+        if draw <= fitness:
+            index = cumulative_fitnesses.index(fitness)
+            break
+    selection_2 = population[index]
+
+    children = selection_1.generate_children(selection_2)
+    for child in children:
+        results.append(child)
+    # End of Roulette Selection
+
     return results
 
 
