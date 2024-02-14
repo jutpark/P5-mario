@@ -68,25 +68,54 @@ class Individual_Grid(object):
         # STUDENT also consider weighting the different tile types so it's not uniformly random
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
 
+
+        newGen=copy.deepcopy(self.genome)
         left = 1
         right = width - 1
         for y in range(height):
             for x in range(left, right):
-                pass
+                if((random.Random()*99+1)<35 and y>1):
+                    if newGen[y][x]== 'X':
+                        if newGen[y-1][x]!='X':
+                            if (random.Random()*9+1)<=5:
+                                genome[y][x] = 'B'
+                            else:
+                                genome[y][x] = '-'
+                        elif newGen[y][x]!='|' or newGen[y][x]!='T':
+                            if (random.Random()*9+1)<=2:
+                                genome[y][x] = 'M'
+                            else:
+                                genome[y][x] = '?'
+                        elif newGen[y][x]!='-':
+                            if (random.Random()*9+1)<=3:
+                                genome[y][x] = '?'
+                            if (random.Random()*9+1)>=6:
+                                genome[y][x] = 'o'
+                        else:
+                            genome[y][x] = newGen[y][x]
+                    else: 
+                        genome[y][x] = newGen[y][x]
         return genome
 
     # Create zero or more children from self and other
     def generate_children(self, other):
         new_genome = copy.deepcopy(self.genome)
+        o=copy.deepcopy(other.genome)
         # Leaving first and last columns alone...
         # do crossover with other
         left = 1
         right = width - 1
         for y in range(height):
             for x in range(left, right):
+                if (random.Random()*100+1)<=15:
+                        copy_genome = new_genome
+                        if o[y][x] != 'T' and o[y][x] != '|':
+                            copy_genome[y][x] = o[y][x]
+                        else:
+                            new_genome[y][x]
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
-                pass
+                
         # do mutation; note we're returning a one-element tuple here
         return (Individual_Grid(new_genome),)
 
