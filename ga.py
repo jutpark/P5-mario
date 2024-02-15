@@ -72,27 +72,60 @@ class Individual_Grid(object):
         newGen=copy.deepcopy(self.genome)
         left = 1
         right = width - 1
+        total_gap = 0
+        total_land = 0
         for y in range(height):
             for x in range(left, right):
-                if((random.random()*99+1)<35 and y>1):
-                    if newGen[y][x]== 'X':
-                        if newGen[y-1][x]!='X':
-                            if (random.random()*9+1)<=5:
-                                genome[y][x] = 'B'
-                            else:
-                                genome[y][x] = '-'
-                        elif newGen[y][x]!='|' or newGen[y][x]!='T':
-                            if (random.random()*9+1)<=2:
-                                genome[y][x] = 'M'
-                            else:
-                                genome[y][x] = '?'
-                        elif newGen[y][x]!='-':
-                            if (random.random()*9+1)<=3:
-                                genome[y][x] = '?'
-                            if (random.random()*9+1)>=6:
-                                genome[y][x] = 'o'
+                if((random.random()*99+1)<35):
+                    # Set up a floor with pits and islands (with ocassional pipes)
+                    if newGen[y][x]== 'X' and y == height - 1:
+                        if (random.random()*9+1)<=2 and total_gap < 3 and x < right - 1 and genome[y][x+1] != '-' and total_land >= 3:
+                            genome[y][x] = '-'
+                            total_gap += 1
+                            total_land = 0
                         else:
-                            genome[y][x] = newGen[y][x]
+                            if (random.random()*9+1)<=1.1 and x < right - 1 and newGen[y][x+1] != '|' and newGen[y][x+1] != 'T':
+                                genome[y][x] = '|'
+                            else:
+                                genome[y][x] = 'X'
+                            total_gap = 0
+                            total_land += 1
+                    # Clear up blocks that are too high up
+                    elif newGen[y][x] != '-' and y <= 6:
+                        genome[y][x] = '-'
+                    # Expand or top off pipes
+                    elif y < height - 1 and newGen[y+1][x] == '|' and newGen[y][x] != 'T' and newGen[y][x] != '|':
+                        if (random.random()*9+1)<=3:
+                            genome[y][x] = '|'
+                        else:
+                            genome[y][x] = 'T'
+                    # Trim any unfinished pipes
+                    elif newGen[y][x] == '|' and newGen[y-1][x] != 'T' and newGen[y-1][x] != '|':
+                        if y < height - 1:
+                            genome[y][x] = '-'
+                        else:
+                            genome[y][x] = 'X'
+                    elif newGen[y][x] == 'T' and newGen[y+1][x] != '|':
+                        genome[y][x] = '-'
+                    # Old mutate stuff
+                    # elif newGen[y-1][x]!='X':
+                    #     if (random.random()*9+1)<=5:
+                    #         genome[y][x] = 'B'
+                    #     else:
+                    #         genome[y][x] = '-'
+                    # elif newGen[y][x]!='|' or newGen[y][x]!='T':
+                    #     if (random.random()*9+1)<=2:
+                    #         genome[y][x] = 'M'
+                    #     else:
+                    #         genome[y][x] = '?'
+                    # elif newGen[y][x]!='-':
+                    #     if (random.random()*9+1)<=3:
+                    #         genome[y][x] = '?'
+                    #     if (random.random()*9+1)>=6:
+                    #         genome[y][x] = 'o'
+                    # elif newGen[y][x] == '-' and y == height - 1:
+                    #     total_gap += 1
+                    #     total_land = 0
                     else: 
                         genome[y][x] = newGen[y][x]
         return genome
